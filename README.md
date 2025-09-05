@@ -5,7 +5,7 @@ An ASP.NET Core MVC application for managing tour packages, bookings, and user p
 ## Requirements
 
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download)
-- SQL Server instance (default connection string targets `.\\SQLEXPRESS`)
+- SQL Server instance (default connection string targets `localhost`)
 - Optional: [dotnet-ef](https://learn.microsoft.com/ef/core/cli/dotnet) tool for applying migrations
 
 ### NuGet Packages
@@ -19,7 +19,26 @@ The project uses the following NuGet packages:
 
 ## Setup
 
-1. Update the connection string in `appsettings.json` to point to your SQL Server.
+1. Update the connection string in `appsettings.json` to point to your SQL Server.  
+   Example configuration:
+
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "Server=localhost;Database=TourismDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
+     }
+   }
+   ```
+
+   The application reads this value in `Program.cs` when setting up Entity Framework Core:
+
+   ```csharp
+   var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+       ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+   builder.Services.AddDbContext<ApplicationDbContext>(options =>
+       options.UseSqlServer(connectionString));
+   ```
 2. Restore and build the project:
 
    ```bash
