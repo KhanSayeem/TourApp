@@ -299,3 +299,4 @@ C:\Users\Hi\Documents\GitHub\TourApp\TourismApp\obj\Debug\net9.0\TourismApp.pdb
 C:\Users\Hi\Documents\GitHub\TourApp\TourismApp\obj\Debug\net9.0\TourismApp.genruntimeconfig.cache
 C:\Users\Hi\Documents\GitHub\TourApp\TourismApp\obj\Debug\net9.0\ref\TourismApp.dll
 C:\Users\Hi\Documents\GitHub\TourApp\TourismApp\obj\Debug\net9.0\compressed\8c173mjwgh-9p6m7ng4z0.gz
+C:\Users\Hi\Documents\GitHub\TourApp\TourismApp\obj\Debug\net9.0\TourismApp.sourcelink.json
