@@ -6,16 +6,7 @@ An ASP.NET Core MVC application for managing tour packages, bookings, and user p
 
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download)
 - SQL Server instance (default connection string targets `localhost`)
-- Optional: [dotnet-ef](https://learn.microsoft.com/ef/core/cli/dotnet) tool for applying migrations
-
-### NuGet Packages
-The project uses the following NuGet packages:
-
-- Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 9.0.8
-- Microsoft.AspNetCore.Identity.EntityFrameworkCore 9.0.8
-- Microsoft.AspNetCore.Identity.UI 9.0.8
-- Microsoft.EntityFrameworkCore.SqlServer 9.0.8
-- Microsoft.EntityFrameworkCore.Tools 9.0.8
+- [dotnet-ef](https://learn.microsoft.com/ef/core/cli/dotnet) tool for applying migrations
 
 ## Setup
 
