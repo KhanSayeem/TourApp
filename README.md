@@ -46,7 +46,7 @@ A comprehensive ASP.NET Core MVC web application for managing tourism packages, 
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/TourApp.git
+git clone https://github.com/KhanSayeem/TourApp.git
 cd TourApp
 ```
 
