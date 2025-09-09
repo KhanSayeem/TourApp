@@ -72,7 +72,7 @@ The application will be available at `https://localhost:5001` or `http://localho
 
 ```
 TourApp/
-├── TourismApp/                 # Main application project
+├── 
 │   ├── Controllers/           # MVC Controllers
 │   │   ├── BookingsController.cs
 │   │   ├── FeedbacksController.cs
