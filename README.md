@@ -58,7 +58,6 @@ Server=.\\SQLEXPRESS;Database=TourismDb;Integrated Security=True;TrustServerCert
 
 ### 3. Database Migration
 ```bash
-cd TourismApp
 dotnet ef database update
 ```
 
