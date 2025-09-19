@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#f0f2f5"/>
+  <circle cx="400" cy="300" r="150" fill="#007bff" fill-opacity="0.1"/>
+  <circle cx="400" cy="300" r="100" fill="#007bff" fill-opacity="0.2"/>
+  <circle cx="400" cy="300" r="50" fill="#007bff" fill-opacity="0.3"/>
+  <text x="400" y="550" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#6c757d">
+    Tour Image Placeholder
+  </text>
+</svg>

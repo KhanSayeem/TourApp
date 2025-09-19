@@ -5,39 +5,193 @@
     ViewData["Title"] = Model.Title;
 }
 
-<h2>@Model.Title</h2>
-<p>@Model.Description</p>
-<div><strong>Duration:</strong> @Model.DurationDays days</div>
-<div><strong>Price:</strong> @Model.Price</div>
-<div><strong>Group Limit:</strong> @Model.GroupSizeLimit</div>
-
-<h4 class="mt-3">Available Dates</h4>
-@if (!Model.TourDates.Any())
-{
-    <div class="alert alert-info">No dates yet.</div>
-}
-else
-{
-    <table class="table table-sm">
-        <thead><tr><th>Date</th><th>Capacity</th><th>Action</th></tr></thead>
-        <tbody>
-            @foreach (var d in Model.TourDates.OrderBy(x => x.Date))
-            {
-                <tr>
-                    <td>@d.Date.ToString("yyyy-MM-dd")</td>
-                    <td>@d.Capacity</td>
-                    <td>
-                        @if (User.IsInRole("Tourist"))
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <img src="@(string.IsNullOrWhiteSpace(Model.ImagePath) 
+                ? Url.Content("~/images/placeholder.jpg") 
+                : Url.Content(Model.ImagePath))"
+                asp-append-version="true"
+                class="card-img-top" 
+                style="height: 400px; object-fit: cover;"
+                alt="@Model.Title" />
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2 class="card-title">@Model.Title</h2>
+                        <p class="text-muted">
+                            <i class="fas fa-building me-1"></i> 
+                            <strong>Agency:</strong> @Model.AgencyProfile?.AgencyName
+                        </p>
+                    </div>
+                    <span class="h3 text-primary">$@Model.Price</span>
+                </div>
+                <p class="card-text">@Model.Description</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                <i class="fas fa-clock fa-2x text-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted">Duration</small>
+                                <div class="h5 mb-0">@Model.DurationDays @(Model.DurationDays == 1 ? "day" : "days")</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                                <i class="fas fa-users fa-2x text-success"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted">Group Size</small>
+                                <div class="h5 mb-0">@Model.GroupSizeLimit people</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                                <i class="fas fa-star fa-2x text-info"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted">Rating</small>
+                                <div class="h5 mb-0">4.8 <small class="text-muted">(128 reviews)</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Book This Tour</h5>
+            </div>
+            <div class="card-body">
+                <h4 class="mb-4">Available Dates</h4>
+                @if (!Model.TourDates.Any())
+                {
+                    <div class="alert alert-info d-flex align-items-center" role="alert">
+                        <i class="fas fa-info-circle fa-lg me-2"></i>
+                        <div>No dates available for this tour yet.</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="list-group">
+                        @foreach (var d in Model.TourDates.OrderBy(x => x.Date))
                         {
-                            <form asp-controller="Bookings" asp-action="Create" method="post">
-                                <input type="hidden" name="tourDateId" value="@d.Id" />
-                                <input type="number" name="participants" class="form-control" placeholder="Participants" required />
-                                <button class="btn btn-primary btn-sm">Book</button>
-                            </form>
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">@d.Date.ToString("ddd, MMM dd, yyyy")</h6>
+                                    <span class="badge bg-secondary">@d.Capacity spots left</span>
+                                </div>
+                                @if (User.IsInRole("Tourist"))
+                                {
+                                    <form asp-controller="Bookings" asp-action="Create" method="post">
+                                        <input type="hidden" name="tourDateId" value="@d.Id" />
+                                        <div class="input-group mb-2">
+                                            <input type="number" name="participants" class="form-control" placeholder="Participants" min="1" max="@d.Capacity" required />
+                                            <button class="btn btn-primary" type="submit">
+                                                <i class="fas fa-calendar-check me-1"></i>Book
+                                            </button>
+                                        </div>
+                                        @Html.AntiForgeryToken()
+                                    </form>
+                                }
+                                else if (!User.Identity.IsAuthenticated)
+                                {
+                                    <a href="@Url.Page("/Account/Login")" class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-sign-in-alt me-1"></i>Login to Book
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning mb-0" role="alert">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Only tourists can book tours
+                                    </div>
+                                }
+                            </div>
                         }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Tour Amenities</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.TourPackageAmenities?.Any() == true)
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var amenity in Model.TourPackageAmenities)
+                        {
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-check-circle me-1 text-success"></i>
+                                @amenity.Amenity.Name
+                            </span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No amenities specified for this tour.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Customer Reviews</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="h1 mb-0 text-primary">4.8</div>
+                    <div class="ms-3">
+                        <div class="fw-bold">Overall Rating</div>
+                        <div>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fas fa-star @(i <= 5 ? "text-warning" : "text-muted")"></i>
+                            }
+                            <span class="ms-2 text-muted">128 reviews</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-light" role="alert">
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-secondary" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">Alex Traveler</h6>
+                            <div class="mb-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="fas fa-star text-warning"></i>
+                                }
+                            </div>
+                            <p class="mb-1">This was an amazing experience! The guide was knowledgeable and the sights were breathtaking. Highly recommend this tour to anyone visiting the area.</p>
+                            <small class="text-muted">Visited in July 2025</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

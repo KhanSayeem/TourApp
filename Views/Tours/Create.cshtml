@@ -3,33 +3,143 @@
 @{
   ViewData["Title"] = "Create Package";
 }
-<h2>Create Package</h2>
 
-<form asp-action="Create" method="post">
-  @Html.AntiForgeryToken()
-  <div asp-validation-summary="All" class="text-danger"></div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Create New Tour Package</h2>
+    <a asp-action="MyPackages" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Back to My Packages
+    </a>
+</div>
 
-  <div class="mb-3"><label asp-for="Title" class="form-label"></label><input asp-for="Title" class="form-control"/><span asp-validation-for="Title" class="text-danger"></span></div>
-  <div class="mb-3"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control"></textarea><span asp-validation-for="Description" class="text-danger"></span></div>
-  <div class="mb-3"><label asp-for="DurationDays" class="form-label"></label><input asp-for="DurationDays" class="form-control" type="number"/><span asp-validation-for="DurationDays" class="text-danger"></span></div>
-  <div class="mb-3"><label asp-for="Price" class="form-label"></label><input asp-for="Price" class="form-control" type="number" step="0.01"/><span asp-validation-for="Price" class="text-danger"></span></div>
-  <div class="mb-3"><label asp-for="GroupSizeLimit" class="form-label"></label><input asp-for="GroupSizeLimit" class="form-control" type="number"/><span asp-validation-for="GroupSizeLimit" class="text-danger"></span></div>
-  <div class="mb-3"><label asp-for="ImagePath" class="form-label"></label><input asp-for="ImagePath" class="form-control" placeholder="/images/yourphoto.jpg"/></div>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger"></div>
 
-  <h4 class="mt-4">Dates</h4>
-  <table class="table table-sm">
-    <thead><tr><th>Date</th><th>Capacity</th></tr></thead>
-    <tbody>
-    @for (int i = 0; i < Model.NewDates.Count; i++)
-    {
-      <tr>
-        <td><input asp-for="NewDates[@i].Date" class="form-control" type="date" /></td>
-        <td><input asp-for="NewDates[@i].Capacity" class="form-control" type="number" /></td>
-      </tr>
-    }
-    </tbody>
-  </table>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter tour title"/>
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Describe your tour package in detail"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="DurationDays" class="form-label"></label>
+                            <input asp-for="DurationDays" class="form-control" type="number" min="1"/>
+                            <span asp-validation-for="DurationDays" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Price" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Price" class="form-control" type="number" step="0.01" min="0"/>
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="GroupSizeLimit" class="form-label"></label>
+                            <input asp-for="GroupSizeLimit" class="form-control" type="number" min="1"/>
+                            <span asp-validation-for="GroupSizeLimit" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="ImagePath" class="form-label">Image Path</label>
+                        <input asp-for="ImagePath" class="form-control" placeholder="/images/yourphoto.jpg"/>
+                        <div class="form-text">Provide a path to your tour image (optional)</div>
+                    </div>
+                    
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title">Tour Image Preview</h6>
+                            <img src="@(string.IsNullOrWhiteSpace(Model.ImagePath) 
+                                ? Url.Content("~/images/placeholder.jpg") 
+                                : Url.Content(Model.ImagePath))"
+                                asp-append-version="true"
+                                class="img-fluid rounded" 
+                                style="max-height: 200px;"
+                                alt="Tour image preview" />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  <button type="submit" class="btn btn-primary">Save</button>
-</form>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+            <h4 class="mt-4 mb-3">Tour Dates</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Capacity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for (int i = 0; i < Model.NewDates.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <input asp-for="NewDates[@i].Date" class="form-control" type="date" />
+                            </td>
+                            <td>
+                                <input asp-for="NewDates[@i].Capacity" class="form-control" type="number" min="1" />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeDate(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            
+            <button type="button" class="btn btn-outline-primary mb-3" onclick="addDate()">
+                <i class="fas fa-plus me-1"></i>Add Date
+            </button>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="MyPackages" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i>Save Package
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function addDate() {
+            var table = document.querySelector('tbody');
+            var rowCount = table.rows.length;
+            var row = table.insertRow(-1);
+            
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            
+            cell1.innerHTML = '<input name="NewDates[' + rowCount + '].Date" class="form-control" type="date" />';
+            cell2.innerHTML = '<input name="NewDates[' + rowCount + '].Capacity" class="form-control" type="number" min="1" />';
+            cell3.innerHTML = '<button type="button" class="btn btn-outline-danger btn-sm" onclick="removeDate(this)"><i class="fas fa-trash"></i></button>';
+        }
+        
+        function removeDate(button) {
+            var row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+    </script>
+}

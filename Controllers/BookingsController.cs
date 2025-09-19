@@ -148,6 +148,22 @@ namespace TourismApp.Controllers
             return View(items);
         }
 
+        // Test action to debug booking issues
+        [Authorize(Roles = "Tourist")]
+        public async Task<IActionResult> Test()
+        {
+            var uid = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+            var items = await _ctx.Bookings
+                .Where(b => b.UserId == uid)
+                .Include(b => b.TourDate)
+                    .ThenInclude(td => td.TourPackage)
+                .OrderByDescending(b => b.CreatedAt)
+                .ToListAsync();
+
+            return View(items);
+        }
+
         // Tourist: create a booking from the Details page
 [HttpPost, Authorize(Roles = "Tourist")]
 [ValidateAntiForgeryToken]
@@ -173,13 +189,13 @@ public async Task<IActionResult> Create(int tourDateId, int participants)
     if (booked + participants > tourDate.Capacity)
     {
         TempData["Error"] = $"Not enough capacity. Available: {tourDate.Capacity - booked}.";
-        return RedirectToAction("Details", "Tours", new { id = tourDateId });
+        return RedirectToAction("Details", "Tours", new { id = tourDate.TourPackageId });
     }
 
     var uid = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
     // Create a new booking
-    _ctx.Bookings.Add(new Booking
+    var booking = new Booking
     {
         UserId = uid,
         TourDateId = tourDateId,
@@ -187,12 +203,13 @@ public async Task<IActionResult> Create(int tourDateId, int participants)
         Status = BookingStatus.Pending,
         PaymentStatus = PaymentStatus.Unpaid,
         CreatedAt = DateTime.UtcNow
-    });
+    };
 
+    _ctx.Bookings.Add(booking);
     await _ctx.SaveChangesAsync();
 
     TempData["Msg"] = "Booking created successfully!";
-    return RedirectToAction("Index", "Bookings");
+    return RedirectToAction("Test", "Bookings");
 }
 
 
